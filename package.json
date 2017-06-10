@@ -10,5 +10,9 @@
   "devDependencies": {
     "eslint": "^3.19.0"
   },
-  "description": "Displays Ka-50 controls on an Elgato Stream Deck controller. Requires DCS BIOS."
+  "description": "Displays Ka-50 controls on an Elgato Stream Deck controller. Requires DCS BIOS.",
+  "dependencies": {
+    "dcs-bios-api": "0.0.3",
+    "stream-deck-api": "0.0.1"
+  }
 }
