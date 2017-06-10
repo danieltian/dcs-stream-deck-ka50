@@ -12,6 +12,8 @@
   },
   "description": "Displays Ka-50 controls on an Elgato Stream Deck controller. Requires DCS BIOS.",
   "dependencies": {
+    "audio-loader": "^1.0.3",
+    "audio-play": "^2.1.1",
     "dcs-bios-api": "0.0.3",
     "stream-deck-api": "0.0.1"
   }

@@ -1,12 +1,16 @@
 const streamDeckApi = require('stream-deck-api');
 const DcsBiosApi = require('dcs-bios-api');
 const path = require('path');
+const play = require('audio-play');
+const load = require('audio-loader');
 
 const IMAGE_FOLDER = './images/';
 
 var api = new DcsBiosApi({ logLevel: 'INFO' });
 var streamDeck = streamDeckApi.getStreamDeck();
 api.startListening();
+
+var buttonPressPromise = load(path.resolve('./sounds/button-press.wav'));
 
 process.on('SIGINT', () => {
   streamDeck.reset();
@@ -20,6 +24,7 @@ var pages = {
   MAIN: {
     1: { type: 'page', page: 'DATALINK', image: 'data-link.png' },
     2: { type: 'page', page: 'ABRIS', image: 'pvi-abris.png' },
+    3: { type: 'page', page: 'PVI', image: 'pvi-800.png' },
 
     6: { type: 'ledButton', button: 'AP_BANK_HOLD_BTN', led: 'AP_BANK_HOLD_LED', upImage: 'AP_B_off.png', downImage: 'AP_B_on.png' },
     7: { type: 'ledButton', button: 'AP_PITCH_HOLD_BTN', led: 'AP_PITCH_HOLD_LED', upImage: 'AP_P_off.png', downImage: 'AP_P_on.png' },
@@ -53,11 +58,47 @@ var pages = {
 
   ABRIS: {
     1: { type: 'page', page: 'MAIN', image: 'main-page.png' },
+
+    6: { type: 'ledButton', button: 'PVI_SELF_COOR_BTN', led: 'PVI_SELF_COOR_LED', upImage: 'btnSELF-off.png', downImage: 'btnSELF-on.png' },
+    7: { type: 'ledButton', button: 'PVI_DTA_DH_BTN', led: 'PVI_DTA_DH_LED', upImage: 'btnDTA-off.png', downImage: 'btnDTA-on.png' },
+    8: { type: 'ledButton', button: 'PVI_WIND_HDG_SPEED_BTN', led: 'PVI_WIND_HDG_SPEED_LED', upImage: 'btnWIND-off.png', downImage: 'btnWIND-on.png' },
+    9: { type: 'ledButton', button: 'PVI_THDG_TIME_RANGE_BTN', led: 'PVI_THDG_TIME_RANGE_LED', upImage: 'btnTHEAD-off.png', downImage: 'btnTHEAD-on.png' },
+    10: { type: 'ledButton', button: 'PVI_BEARING_RANGE_BTN', led: 'PVI_BEARING_RANGE_LED', upImage: 'btnHEAD-off.png', downImage: 'btnHEAD-on.png' },
+
+
     11: { type: 'button', button: 'ABRIS_BTN_1', upImage: 'abris_button_off.png', downImage: 'abris_button_on.png' },
     12: { type: 'button', button: 'ABRIS_BTN_2', upImage: 'abris_button_off.png', downImage: 'abris_button_on.png' },
     13: { type: 'button', button: 'ABRIS_BTN_3', upImage: 'abris_button_off.png', downImage: 'abris_button_on.png' },
     14: { type: 'button', button: 'ABRIS_BTN_4', upImage: 'abris_button_off.png', downImage: 'abris_button_on.png' },
     15: { type: 'button', button: 'ABRIS_BTN_5', upImage: 'abris_button_off.png', downImage: 'abris_button_on.png' }
+  },
+
+  PVI: {
+    1: { type: 'page', page: 'MAIN', image: 'main-page.png' },
+    2: { type: 'button', button: 'PVI_1', upImage: 'btn1.png', downImage: 'btn1p.png' },
+    3: { type: 'button', button: 'PVI_2', upImage: 'btn2.png', downImage: 'btn2p.png' },
+    4: { type: 'button', button: 'PVI_3', upImage: 'btn3.png', downImage: 'btn3p.png' },
+    5: { type: 'custom', fn: createPviSelectedWaypointIndicator.bind(this, 5) },
+
+    6: { type: 'page', page: 'PVI_SELECTION', image: 'wpt-type.png' },
+    7: { type: 'button', button: 'PVI_4', upImage: 'btn4.png', downImage: 'btn4p.png' },
+    8: { type: 'button', button: 'PVI_5', upImage: 'btn5.png', downImage: 'btn5p.png' },
+    9: { type: 'button', button: 'PVI_6', upImage: 'btn6.png', downImage: 'btn6p.png' },
+    10: { type: 'ledButton', button: 'PVI_RESET_BTN', led: 'PVI_RESET_LED', upImage: 'btnRESET-off.png', downImage: 'btnRESET-on.png' },
+
+    11: { type: 'button', button: 'PVI_0', upImage: 'btn0.png', downImage: 'btn0p.png' },
+    12: { type: 'button', button: 'PVI_7', upImage: 'btn7.png', downImage: 'btn7p.png' },
+    13: { type: 'button', button: 'PVI_8', upImage: 'btn8.png', downImage: 'btn8p.png' },
+    14: { type: 'button', button: 'PVI_9', upImage: 'btn9.png', downImage: 'btn9p.png' },
+    15: { type: 'ledButton', button: 'PVI_ENTER_BTN', led: 'PVI_ENTER_LED', upImage: 'btnENTER-off.png', downImage: 'btnENTER-on.png' }
+  },
+
+  PVI_SELECTION: {
+    1: { type: 'page', page: 'PVI', image: 'pvi-800.png' },
+    2: { type: 'pageWithAction', button: 'PVI_WAYPOINTS_BTN', page: 'PVI', upImage: 'btnWPT-off.png', downImage: 'btnWPT-on.png' },
+    7: { type: 'pageWithAction', button: 'PVI_AIRFIELDS_BTN', page: 'PVI', upImage: 'btnAIR-off.png', downImage: 'btnAIR-on.png' },
+    11: { type: 'pageWithAction', button: 'PVI_FIXPOINTS_BTN', page: 'PVI', upImage: 'btnFIX-off.png', downImage: 'btnFIX-on.png' },
+    12: { type: 'pageWithAction', button: 'PVI_TARGETS_BTN', page: 'PVI', upImage: 'btnNAV-off.png', downImage: 'btnNAV-on.png' }
   }
 };
 
@@ -74,15 +115,23 @@ function displayPage(page) {
       streamDeck.drawColor(0x000000, i);
     }
     else {
+      config.buttonNumber = i;
+
       switch (config.type) {
         case 'ledButton':
-          createToggleLedButton(config.button, config.led, config.upImage, config.downImage, i);
+          createToggleLedButton(config);
           break;
         case 'button':
           createMomentaryButton(config.button, config.upImage, config.downImage, i);
           break;
         case 'page':
           createPageButton(config.page, config.image, i);
+          break;
+        case 'pageWithAction':
+          createMomentaryPageButton(config.button, config.page, config.upImage, config.downImage, i);
+          break;
+        case 'custom':
+          config.fn();
           break;
       }
     }
@@ -114,21 +163,26 @@ function createToggleButton(buttonIdentifier, releasedImagePath, pressedImagePat
   });
 }
 
-function createToggleLedButton(buttonIdentifier, ledIdentifier, upImage, downImage, buttonNumber) {
+function createToggleLedButton({ button, led, upImage, downImage, buttonNumber, previousImage }) {
+  if (!previousImage) {
+    previousImage = path.resolve(upImage);
+  }
+
   var upImagePath = path.resolve(IMAGE_FOLDER + upImage);
   var downImagePath = path.resolve(IMAGE_FOLDER + downImage);
+
   streamDeck.drawImageFile(upImagePath, buttonNumber);
 
-  api.on(ledIdentifier, (value) => {
+  api.on(led, (value) => {
     streamDeck.drawImageFile((value ? downImagePath : upImagePath), buttonNumber);
   });
 
   streamDeck.on(`down:${buttonNumber}`, () => {
-    api.sendMessage(`${buttonIdentifier} 1\n`);
+    api.sendMessage(`${button} 1\n`);
   });
 
   streamDeck.on(`up:${buttonNumber}`, () => {
-    api.sendMessage(`${buttonIdentifier} 0\n`);
+    api.sendMessage(`${button} 0\n`);
   });
 }
 
@@ -137,6 +191,15 @@ function createPageButton(page, image, buttonNumber) {
   streamDeck.drawImageFile(imagePath, buttonNumber);
 
   streamDeck.on(`down:${buttonNumber}`, () => {
+    buttonPressPromise.then(play);
+    displayPage(pages[page]);
+  });
+}
+
+function createMomentaryPageButton(buttonIdentifier, page, upImage, downImage, buttonNumber) {
+  createMomentaryButton(buttonIdentifier, upImage, downImage, buttonNumber);
+
+  streamDeck.on(`up:${buttonNumber}`, () => {
     displayPage(pages[page]);
   });
 }
@@ -154,5 +217,55 @@ function createMomentaryButton(buttonIdentifier, upImage, downImage, buttonNumbe
   streamDeck.on(`up:${buttonNumber}`, () => {
     api.sendMessage(`${buttonIdentifier} 0\n`);
     streamDeck.drawImageFile(upImagePath, buttonNumber);
+  });
+}
+
+function createPviSelectedWaypointIndicator(buttonNumber) {
+  var drawImageFile = (value, imageName) => {
+    if (value) {
+      streamDeck.drawImageFile(path.resolve(IMAGE_FOLDER + imageName), buttonNumber);
+    }
+    else if (!value && currentSelection == imageName) {
+      streamDeck.drawColor(0x000000, buttonNumber);
+      currentSelection = undefined;
+    }
+    else {
+      currentSelection = imageName;
+    }
+  };
+
+  var currentSelection;
+
+  if (api.getControlValue('Ka-50', 'PVI-800 Control Panel', 'PVI_WAYPOINTS_LED')) {
+    drawImageFile(buttonNumber, 'btnWPT-on.png');
+    currentSelection = 'btnWPT-on.png';
+  }
+  else if (api.getControlValue('Ka-50', 'PVI-800 Control Panel', 'PVI_AIRFIELDS_LED')) {
+    drawImageFile(buttonNumber, 'btnAIR-on.png');
+    currentSelection = 'btnAIR-on.png';
+  }
+  else if (api.getControlValue('Ka-50', 'PVI-800 Control Panel', 'PVI_FIXPOINTS_LED')) {
+    drawImageFile(buttonNumber, 'btnFIX-on.png');
+    currentSelection = 'btnFIX-on.png';
+  }
+  else if (api.getControlValue('Ka-50', 'PVI-800 Control Panel', 'PVI_TARGETS_LED')) {
+    drawImageFile(buttonNumber, 'btnNAV-on.png');
+    currentSelection = 'btnNAV-on.png';
+  }
+
+  api.on('PVI_WAYPOINTS_LED', (value) => {
+    drawImageFile(value, 'btnWPT-on.png');
+  });
+
+  api.on('PVI_AIRFIELDS_LED', (value) => {
+    drawImageFile(value, 'btnAIR-on.png');
+  });
+
+  api.on('PVI_FIXPOINTS_LED', (value) => {
+    drawImageFile(value, 'btnFIX-on.png');
+  });
+
+  api.on('PVI_TARGETS_LED', (value) => {
+    drawImageFile(value, 'btnNAV-on.png');
   });
 }
