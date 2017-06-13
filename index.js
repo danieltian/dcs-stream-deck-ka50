@@ -1,16 +1,12 @@
 const streamDeckApi = require('stream-deck-api');
 const DcsBiosApi = require('dcs-bios-api');
 const path = require('path');
-const play = require('audio-play');
-const load = require('audio-loader');
 
 const IMAGE_FOLDER = './images/';
 
 var api = new DcsBiosApi({ logLevel: 'INFO' });
 var streamDeck = streamDeckApi.getStreamDeck();
 api.startListening();
-
-var buttonPressPromise = load(path.resolve('./sounds/button-press.wav'));
 
 process.on('SIGINT', () => {
   streamDeck.reset();
@@ -65,7 +61,6 @@ var pages = {
     9: { type: 'ledButton', button: 'PVI_THDG_TIME_RANGE_BTN', led: 'PVI_THDG_TIME_RANGE_LED', upImage: 'btnTHEAD-off.png', downImage: 'btnTHEAD-on.png' },
     10: { type: 'ledButton', button: 'PVI_BEARING_RANGE_BTN', led: 'PVI_BEARING_RANGE_LED', upImage: 'btnHEAD-off.png', downImage: 'btnHEAD-on.png' },
 
-
     11: { type: 'button', button: 'ABRIS_BTN_1', upImage: 'abris_button_off.png', downImage: 'abris_button_on.png' },
     12: { type: 'button', button: 'ABRIS_BTN_2', upImage: 'abris_button_off.png', downImage: 'abris_button_on.png' },
     13: { type: 'button', button: 'ABRIS_BTN_3', upImage: 'abris_button_off.png', downImage: 'abris_button_on.png' },
@@ -78,7 +73,7 @@ var pages = {
     2: { type: 'button', button: 'PVI_1', upImage: 'btn1.png', downImage: 'btn1p.png' },
     3: { type: 'button', button: 'PVI_2', upImage: 'btn2.png', downImage: 'btn2p.png' },
     4: { type: 'button', button: 'PVI_3', upImage: 'btn3.png', downImage: 'btn3p.png' },
-    5: { type: 'custom', fn: createPviSelectedWaypointIndicator.bind(this, 5) },
+    //5: { type: 'custom', fn: createPviSelectedWaypointIndicator.bind(this, 5) },
 
     6: { type: 'page', page: 'PVI_SELECTION', image: 'wpt-type.png' },
     7: { type: 'button', button: 'PVI_4', upImage: 'btn4.png', downImage: 'btn4p.png' },
@@ -95,105 +90,151 @@ var pages = {
 
   PVI_SELECTION: {
     1: { type: 'page', page: 'PVI', image: 'pvi-800.png' },
-    2: { type: 'pageWithAction', button: 'PVI_WAYPOINTS_BTN', page: 'PVI', upImage: 'btnWPT-off.png', downImage: 'btnWPT-on.png' },
-    7: { type: 'pageWithAction', button: 'PVI_AIRFIELDS_BTN', page: 'PVI', upImage: 'btnAIR-off.png', downImage: 'btnAIR-on.png' },
-    11: { type: 'pageWithAction', button: 'PVI_FIXPOINTS_BTN', page: 'PVI', upImage: 'btnFIX-off.png', downImage: 'btnFIX-on.png' },
-    12: { type: 'pageWithAction', button: 'PVI_TARGETS_BTN', page: 'PVI', upImage: 'btnNAV-off.png', downImage: 'btnNAV-on.png' }
+    //2: { type: 'pageWithAction', button: 'PVI_WAYPOINTS_BTN', page: 'PVI', upImage: 'btnWPT-off.png', downImage: 'btnWPT-on.png' },
+    //7: { type: 'pageWithAction', button: 'PVI_AIRFIELDS_BTN', page: 'PVI', upImage: 'btnAIR-off.png', downImage: 'btnAIR-on.png' },
+    //11: { type: 'pageWithAction', button: 'PVI_FIXPOINTS_BTN', page: 'PVI', upImage: 'btnFIX-off.png', downImage: 'btnFIX-on.png' },
+    //12: { type: 'pageWithAction', button: 'PVI_TARGETS_BTN', page: 'PVI', upImage: 'btnNAV-off.png', downImage: 'btnNAV-on.png' }
   }
 };
 
-displayPage(pages.MAIN);
+initializePages(pages);
 
-function displayPage(page) {
+function initializePages(pages) {
+  Object.keys(pages).forEach((pageName) => {
+    var page = pages[pageName];
+
+    for (let i = 1; i <= 15; i++) {
+      page[i] = page[i] || {};
+
+      var key = page[i];
+      key._page = pageName;
+      key.number = i;
+      initializeKey(key);
+    }
+  });
+}
+
+function initializeKey(key) {
+  switch (key.type) {
+    case 'ledButton':
+      createToggleLedButton(key);
+      break;
+    case 'button':
+      createMomentaryButton(key);
+      break;
+    case 'page':
+      createPageButton(key);
+      break;
+    case 'pageWithAction':
+      createMomentaryPageButton(key.button, key.page, key.upImage, key.downImage, key.number);
+      break;
+    case 'custom':
+      key.fn();
+      break;
+  }
+}
+
+var currentPage;
+displayPage('MAIN');
+
+function displayPage(pageName) {
   streamDeck.removeButtonListeners();
-  api.removeControlListeners();
+  currentPage = pageName;
+  var page = pages[pageName];
 
-  for (let i = 1; i <= 15; i++) {
-    var config = page[i];
+  Object.keys(page).forEach((keyNumber) => {
+    var key = page[keyNumber];
+    addKeyListener(key);
+    draw(key);
+  });
+}
 
-    if (!config) {
-      streamDeck.drawColor(0x000000, i);
-    }
-    else {
-      config.buttonNumber = i;
+function draw(key) {
+  if (currentPage != key._page) { return; }
 
-      switch (config.type) {
-        case 'ledButton':
-          createToggleLedButton(config);
-          break;
-        case 'button':
-          createMomentaryButton(config.button, config.upImage, config.downImage, i);
-          break;
-        case 'page':
-          createPageButton(config.page, config.image, i);
-          break;
-        case 'pageWithAction':
-          createMomentaryPageButton(config.button, config.page, config.upImage, config.downImage, i);
-          break;
-        case 'custom':
-          config.fn();
-          break;
-      }
-    }
+  if (key.currentImage) {
+    streamDeck.drawImageFile(key.currentImage, key.number);
+  }
+  else {
+    streamDeck.drawColor(0x000000, key.number);
   }
 }
 
-function createToggleButton(buttonIdentifier, releasedImagePath, pressedImagePath, buttonNumber) {
-  streamDeck.fillImageFromFile(buttonNumber, releasedImagePath);
+function addKeyListener(key) {
+  if (key.type == 'ledButton') {
+    streamDeck.on(`down:${key.number}`, () => {
+      api.sendMessage(`${key.button} 1\n`);
+    });
 
-  api.on(buttonIdentifier, (value) => {
-    if (value) {
-      streamDeck.fillImageFromFile(buttonNumber, path.resolve(pressedImagePath));
-    }
-    else {
-      streamDeck.fillImageFromFile(buttonNumber, path.resolve(releasedImagePath));
-    }
-  });
+    streamDeck.on(`up:${key.number}`, () => {
+      api.sendMessage(`${key.button} 0\n`);
+    });
+  }
+  else if (key.type == 'button') {
+    var upImagePath = path.resolve(IMAGE_FOLDER + key.upImage);
+    var downImagePath = path.resolve(IMAGE_FOLDER + key.downImage);
 
-  streamDeck.on('down', (keyIndex) => {
-    if (keyIndex == buttonNumber) {
-      api.sendMessage(`${buttonIdentifier} 1\n`);
-    }
-  });
+    streamDeck.on(`down:${key.number}`, () => {
+      api.sendMessage(`${key.button} 1\n`);
+      key.currentImage = downImagePath;
+      draw(key);
+    });
 
-  streamDeck.on('up', (keyIndex) => {
-    if (keyIndex == buttonNumber) {
-      api.sendMessage(`${buttonIdentifier} 0\n`);
-    }
-  });
+    streamDeck.on(`up:${key.number}`, () => {
+      api.sendMessage(`${key.button} 0\n`);
+      key.currentImage = upImagePath;
+      draw(key);
+    });
+  }
+  else if (key.type == 'page') {
+    streamDeck.on(`down:${key.number}`, () => {
+      displayPage(key.page);
+    });
+  }
 }
 
-function createToggleLedButton({ button, led, upImage, downImage, buttonNumber, previousImage }) {
-  if (!previousImage) {
-    previousImage = path.resolve(upImage);
+/**
+ * Create a button that has a LED in it.
+ */
+function createToggleLedButton(key) {
+  var upImagePath = path.resolve(IMAGE_FOLDER + key.upImage);
+  var downImagePath = path.resolve(IMAGE_FOLDER + key.downImage);
+
+  if (!key.currentImage) {
+    key.currentImage = upImagePath;
   }
 
-  var upImagePath = path.resolve(IMAGE_FOLDER + upImage);
-  var downImagePath = path.resolve(IMAGE_FOLDER + downImage);
+  // Draw the key immediately so that we can see it.
+  draw(key);
 
-  streamDeck.drawImageFile(upImagePath, buttonNumber);
-
-  api.on(led, (value) => {
-    streamDeck.drawImageFile((value ? downImagePath : upImagePath), buttonNumber);
-  });
-
-  streamDeck.on(`down:${buttonNumber}`, () => {
-    api.sendMessage(`${button} 1\n`);
-  });
-
-  streamDeck.on(`up:${buttonNumber}`, () => {
-    api.sendMessage(`${button} 0\n`);
+  // Draw the new image when the LED state changes.
+  api.on(key.led, (value) => {
+    key.currentImage = value ? downImagePath : upImagePath;
+    draw(key);
   });
 }
 
-function createPageButton(page, image, buttonNumber) {
-  var imagePath = path.join(IMAGE_FOLDER, image);
-  streamDeck.drawImageFile(imagePath, buttonNumber);
+/**
+ * Create a button that navigates to another page.
+ */
+function createPageButton(key) {
+  var imagePath = path.join(IMAGE_FOLDER, key.image);
+  key.currentImage = imagePath;
 
-  streamDeck.on(`down:${buttonNumber}`, () => {
-    buttonPressPromise.then(play);
-    displayPage(pages[page]);
-  });
+  draw(key);
+  addKeyListener(key);
+}
+
+/**
+ * Create a momentary button that will switch images when it is pressed and released.
+ */
+function createMomentaryButton(key) {
+  var upImagePath = path.resolve(IMAGE_FOLDER + key.upImage);
+  var downImagePath = path.resolve(IMAGE_FOLDER + key.downImage);
+  key.currentImage = upImagePath;
+
+  draw(key);
+  addKeyListener(key);
 }
 
 function createMomentaryPageButton(buttonIdentifier, page, upImage, downImage, buttonNumber) {
@@ -201,22 +242,6 @@ function createMomentaryPageButton(buttonIdentifier, page, upImage, downImage, b
 
   streamDeck.on(`up:${buttonNumber}`, () => {
     displayPage(pages[page]);
-  });
-}
-
-function createMomentaryButton(buttonIdentifier, upImage, downImage, buttonNumber) {
-  var upImagePath = path.resolve(IMAGE_FOLDER + upImage);
-  var downImagePath = path.resolve(IMAGE_FOLDER + downImage);
-  streamDeck.drawImageFile(upImagePath, buttonNumber);
-
-  streamDeck.on(`down:${buttonNumber}`, () => {
-    api.sendMessage(`${buttonIdentifier} 1\n`);
-    streamDeck.drawImageFile(downImagePath, buttonNumber);
-  });
-
-  streamDeck.on(`up:${buttonNumber}`, () => {
-    api.sendMessage(`${buttonIdentifier} 0\n`);
-    streamDeck.drawImageFile(upImagePath, buttonNumber);
   });
 }
 
