@@ -15,6 +15,7 @@
     "audio-loader": "^1.0.3",
     "audio-play": "^2.1.1",
     "dcs-bios-api": "latest",
+    "robotjs": "github:dbkynd/robotjs",
     "stream-deck-api": "latest"
   }
 }
