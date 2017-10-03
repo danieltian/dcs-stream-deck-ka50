@@ -22,10 +22,15 @@ var pages = {
     1: { type: 'page', page: 'DATALINK', image: 'data-link.png' },
     2: { type: 'page', page: 'ABRIS', image: 'pvi-abris.png' },
     3: { type: 'page', page: 'PVI', image: 'pvi-800.png' },
+    4: { type: 'stateButton', button: 'WEAPONS_MASTER_ARM', upImage: 'MASTER_arm_off.png', downImage: 'MASTER_arm_on.png' },
+    5: { type: 'stateButton', button: 'LASER_STANDBY', upImage: 'LASER_STANDBY_off.png', downImage: 'LASER_STANDBY_on.png' },
 
     6: { type: 'ledButton', button: 'AP_BANK_HOLD_BTN', led: 'AP_BANK_HOLD_LED', upImage: 'AP_B_off.png', downImage: 'AP_B_on.png' },
     7: { type: 'ledButton', button: 'AP_PITCH_HOLD_BTN', led: 'AP_PITCH_HOLD_LED', upImage: 'AP_P_off.png', downImage: 'AP_P_on.png' },
     8: { type: 'ledButton', button: 'AP_HDG_HOLD_BTN', led: 'AP_HDG_HOLD_LED', upImage: 'AP_H_off.png', downImage: 'AP_H_on.png' },
+
+    9: { type: 'ledButton', button: 'WEAPONS_PRESENT_STATION_1', led: 'WEAPONS_PRESENT_STATION_1', upImage: 'WEAPONS_PRESENT_STATION_off.png', downImage: 'WEAPONS_PRESENT_STATION_on.png' },
+    10: { type: 'ledButton', button: 'WEAPONS_PRESENT_STATION_2', led: 'WEAPONS_PRESENT_STATION_2', upImage: 'WEAPONS_PRESENT_STATION_off.png', downImage: 'WEAPONS_PRESENT_STATION_on.png' },
 
     11: { type: 'ledButton', button: 'AP_FD_BTN', led: 'AP_FD_LED', upImage: 'AP_FD_off.png', downImage: 'AP_FD_on.png' },
     12: { type: 'ledButton', button: 'AP_ALT_HOLD_BTN', led: 'AP_ALT_HOLD_LED', upImage: 'AP_A_off.png', downImage: 'AP_A_on.png' },
@@ -113,6 +118,7 @@ function initializePages(pages) {
       var key = page[i];
       key._page = pageName;
       key.number = i;
+      key.state = 0;
       initializeKey(key);
     }
   });
@@ -124,6 +130,9 @@ function initializeKey(key) {
       createToggleLedButton(key);
       break;
     case 'button':
+      createMomentaryButton(key);
+      break;
+    case 'stateButton':
       createMomentaryButton(key);
       break;
     case 'page':
@@ -195,8 +204,25 @@ function addKeyListener(key) {
       displayPage(key.page);
     });
   }
-}
+  else if (key.type == 'stateButton') {
+    var upImagePath = path.resolve(IMAGE_FOLDER + key.upImage);
+    var downImagePath = path.resolve(IMAGE_FOLDER + key.downImage);
 
+    streamDeck.on(`down:${key.number}`, () => {
+      if (key.state == 1) {
+        key.state = 0;
+        api.sendMessage(`${key.button} 0\n`);
+        key.currentImage = upImagePath;
+        draw(key);
+      } else {
+        key.state = 1;
+        api.sendMessage(`${key.button} 1\n`);
+        key.currentImage = downImagePath;
+        draw(key);
+      }
+    });
+  }
+}
 /**
  * Create a button that has a LED in it.
  */
