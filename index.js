@@ -21,16 +21,19 @@ var pages = {
   MAIN: {
     1: { type: 'page', page: 'DATALINK', image: 'data-link.png' },
     2: { type: 'page', page: 'ABRIS', image: 'pvi-abris.png' },
-    3: { type: 'page', page: 'PVI', image: 'pvi-800.png' },
+    //3: { type: 'page', page: 'PVI', image: 'pvi-800.png' },
+    //4: { type: 'page', page: 'RADIO', text: 'RADIO COMM' },
 
     6: { type: 'ledButton', button: 'AP_BANK_HOLD_BTN', led: 'AP_BANK_HOLD_LED', upImage: 'AP_B_off.png', downImage: 'AP_B_on.png' },
     7: { type: 'ledButton', button: 'AP_PITCH_HOLD_BTN', led: 'AP_PITCH_HOLD_LED', upImage: 'AP_P_off.png', downImage: 'AP_P_on.png' },
-    8: { type: 'ledButton', button: 'AP_HDG_HOLD_BTN', led: 'AP_HDG_HOLD_LED', upImage: 'AP_H_off.png', downImage: 'AP_H_on.png' },
+    8: { type: 'ledButton', button: 'AP_FD_BTN', led: 'AP_FD_LED', upImage: 'AP_FD_off.png', downImage: 'AP_FD_on.png' },
+    9: { type: 'ledButton', button: 'WEAPONS_AUTO_TURN_BTN', led: 'WEAPONS_AUTO_TURN_LED', upImage: 'WEAP_auto_turn_off.png', downImage: 'WEAP_auto_turn_on.png' },
+    10: { type: 'ledButton', button: 'WEAPONS_FORWARD_HEMI_TARGET_BTN', led: 'WEAPONS_FORWARD_HEMI_TARGET_LED', upImage: 'WEAP_aa-ho_off.png', downImage: 'WEAP_aa-ho_on.png' },
 
-    11: { type: 'ledButton', button: 'AP_FD_BTN', led: 'AP_FD_LED', upImage: 'AP_FD_off.png', downImage: 'AP_FD_on.png' },
+    11: { type: 'ledButton', button: 'AP_HDG_HOLD_BTN', led: 'AP_HDG_HOLD_LED', upImage: 'AP_H_off.png', downImage: 'AP_H_on.png' },
     12: { type: 'ledButton', button: 'AP_ALT_HOLD_BTN', led: 'AP_ALT_HOLD_LED', upImage: 'AP_A_off.png', downImage: 'AP_A_on.png' },
     13: { type: 'ledButton', button: 'SC_MASTER_CAUTION_BTN', led: 'SC_MASTER_CAUTION_LED', upImage: 'master-caution-off.png', downImage: 'master-caution-on.png' },
-    14: { type: 'ledButton', button: 'WEAPONS_AUTO_TURN_BTN', led: 'WEAPONS_AUTO_TURN_LED', upImage: 'WEAP_auto_turn_off.png', downImage: 'WEAP_auto_turn_on.png' },
+    14: { type: 'ledButton', button: 'WEAPONS_AIRBORNE_TARGET_BTN', led: 'WEAPONS_AIRBORNE_TARGET_LED', upImage: 'WEAP_aa_off.png', downImage: 'WEAP_aa_on.png' },
     15: { type: 'ledButton', button: 'WEAPONS_GROUND_TARGET_BTN', led: 'WEAPONS_GROUND_TARGET_LED', upImage: 'WEAP_mov_gnd_off.png', downImage: 'WEAP_mov_gnd_on.png' }
   },
 
@@ -96,9 +99,41 @@ var pages = {
     //12: { type: 'pageWithAction', button: 'PVI_TARGETS_BTN', page: 'PVI', upImage: 'btnNAV-off.png', downImage: 'btnNAV-on.png' }
   },
 
-  RADIO: {
+  // RADIO: {
+  //   1: { type: 'page', page: 'MAIN', image: 'main-page.png' },
+  //   2: { type: 'page', page: 'FLIGHT', text: 'FLIGHT' },
+  //   3: { type: 'page', page: 'WINGMAN1', text: 'WINGMN 2' },
+  //   4: { type: 'page', page: 'WINGMAN2', text: 'WINGMN 3' },
+  //   5: { type: 'page', page: 'WINGMAN3', text: 'WINGMN 4' },
 
-  }
+
+  //   6: { type: ['keyboard', 'page'], keys: ['right_alt+\\', 'f8', 'f3'], page: 'MAIN', text: 'REPAIR' },
+  //   7: { type: ['keyboard', 'page'], keys: ['right_alt+\\', 'f8', 'f2', 'f1'], page: 'MAIN', text: 'GND PWR ON' },
+  //   8: { type: ['keyboard', 'page'], keys: ['right_alt+\\', 'f8', 'f4', 'f1'], page: 'MAIN', text: 'SETUP HMS' },
+  //   10: { type: ['keyboard', 'page'], keys: ['right_alt+\\', 'f8', 'f5', 'f1'], page: 'MAIN', text: 'TURBO GEAR' },
+
+  //   11: { type: ['keyboard', 'page'], keys: ['right_alt+\\', 'f8', 'f1'], page: 'MAIN', text: 'REARM REFUEL' },
+  //   12: { type: ['keyboard', 'page'], keys: ['right_alt+\\', 'f8', 'f2', 'f2'], page: 'MAIN', text: 'GND PWR OFF' },
+  //   13: { type: ['keyboard', 'page'], keys: ['right_alt+\\', 'f8', 'f4', 'f2'], page: 'MAIN', text: 'SETUP NVG' },
+  //   15: { type: ['keyboard', 'page'], keys: ['right_alt+\\', 'f8', 'f5', 'f2'], page: 'MAIN', text: 'RGLR LAUNCH' }
+  // },
+
+  // FLIGHT: {
+  //   1: { type: 'page', page: 'RADIO', text: 'BACK' },
+  //   2: { type: 'page', page: 'ENGAGE', text: 'ENGAGE' },
+  //   3: { type: ['keyboard', 'page'], keys: ['right_alt+\\', 'f1', 'f2', 'f1'], page: 'MAIN', text: 'PINCER RIGHT' },
+  //   4: { type: ['keyboard', 'page'], keys: ['right_alt+\\', 'f1', 'f2', 'f2'], page: 'MAIN', text: 'PINCER LEFT' },
+  //   5: { type: ['keyboard', 'page'], keys: ['right_alt+\\', 'f1', 'f4'], page: 'MAIN', text: 'COVER ME' },
+
+  //   6: { type: ['keyboard', 'page'], keys: ['right_alt+\\', 'f1', 'f5', 'f2'], page: 'MAIN', text: 'FORM ECHE' },
+  //   7: { type: ['keyboard', 'page'], keys: ['right_alt+\\', 'f1', 'f5', 'f3'], page: 'MAIN', text: 'FORM SPREAD' },
+  //   8: { type: ['keyboard', 'page'], keys: ['right_alt+\\', 'f1', 'f5', 'f4'], page: 'MAIN', text: 'FORM TRAIL' },
+  //   9: { type: ['keyboard', 'page'], keys: ['right_alt+\\', 'f1', 'f5', 'f5'], page: 'MAIN', text: 'OVER WATCH' },
+  //   10: { type: ['keyboard', 'page'], keys: ['right_alt+\\', 'f1', 'f7'], page: 'MAIN', text: 'REJOIN' },
+
+  //   11: { type: ['keyboard', 'page'], keys: ['right_alt+\\', 'f1', 'f6'], page: 'MAIN', text: 'HOLD HERE' },
+  //   12: { type: ['keyboard', 'page'], keys: ['right_alt+\\', 'f1', 'f10'], page: 'MAIN', text: 'JETT WPN' }
+  // }
 };
 
 initializePages(pages);
@@ -119,23 +154,30 @@ function initializePages(pages) {
 }
 
 function initializeKey(key) {
-  switch (key.type) {
-    case 'ledButton':
-      createToggleLedButton(key);
-      break;
-    case 'button':
-      createMomentaryButton(key);
-      break;
-    case 'page':
-      createPageButton(key);
-      break;
-    case 'pageWithAction':
-      createMomentaryPageButton(key.button, key.page, key.upImage, key.downImage, key.number);
-      break;
-    case 'custom':
-      key.fn();
-      break;
-  }
+  key.type = Array.isArray(key.type) ? key.type : [key.type];
+
+  key.type.forEach((type) => {
+    switch (type) {
+      case 'ledButton':
+        createToggleLedButton(key);
+        break;
+      case 'button':
+        createMomentaryButton(key);
+        break;
+      case 'page':
+        createPageButton(key);
+        break;
+      case 'pageWithAction':
+        createMomentaryPageButton(key.button, key.page, key.upImage, key.downImage, key.number);
+        break;
+      case 'keyboard':
+        createKeyboardButton(key);
+        break;
+      case 'custom':
+        key.fn();
+        break;
+    }
+  });
 }
 
 var currentPage;
@@ -156,7 +198,10 @@ function displayPage(pageName) {
 function draw(key) {
   if (currentPage != key._page) { return; }
 
-  if (key.currentImage) {
+  if (key.currentImageBuffer) {
+    streamDeck.drawImageBuffer(key.currentImageBuffer, key.number);
+  }
+  else if (key.currentImage) {
     streamDeck.drawImageFile(key.currentImage, key.number);
   }
   else {
@@ -165,36 +210,43 @@ function draw(key) {
 }
 
 function addKeyListener(key) {
-  if (key.type == 'ledButton') {
-    streamDeck.on(`down:${key.number}`, () => {
-      api.sendMessage(`${key.button} 1\n`);
-    });
+  key.type.forEach((type) => {
+    if (type == 'ledButton') {
+      streamDeck.on(`down:${key.number}`, () => {
+        api.sendMessage(`${key.button} 1\n`);
+      });
 
-    streamDeck.on(`up:${key.number}`, () => {
-      api.sendMessage(`${key.button} 0\n`);
-    });
-  }
-  else if (key.type == 'button') {
-    var upImagePath = path.resolve(IMAGE_FOLDER + key.upImage);
-    var downImagePath = path.resolve(IMAGE_FOLDER + key.downImage);
+      streamDeck.on(`up:${key.number}`, () => {
+        api.sendMessage(`${key.button} 0\n`);
+      });
+    }
+    else if (type == 'button') {
+      var upImagePath = path.resolve(IMAGE_FOLDER + key.upImage);
+      var downImagePath = path.resolve(IMAGE_FOLDER + key.downImage);
 
-    streamDeck.on(`down:${key.number}`, () => {
-      api.sendMessage(`${key.button} 1\n`);
-      key.currentImage = downImagePath;
-      draw(key);
-    });
+      streamDeck.on(`down:${key.number}`, () => {
+        api.sendMessage(`${key.button} 1\n`);
+        key.currentImage = downImagePath;
+        draw(key);
+      });
 
-    streamDeck.on(`up:${key.number}`, () => {
-      api.sendMessage(`${key.button} 0\n`);
-      key.currentImage = upImagePath;
-      draw(key);
-    });
-  }
-  else if (key.type == 'page') {
-    streamDeck.on(`down:${key.number}`, () => {
-      displayPage(key.page);
-    });
-  }
+      streamDeck.on(`up:${key.number}`, () => {
+        api.sendMessage(`${key.button} 0\n`);
+        key.currentImage = upImagePath;
+        draw(key);
+      });
+    }
+    else if (type == 'keyboard') {
+      streamDeck.on(`down:${key.number}`, () => {
+        pressKeyboard(key.keys);
+      });
+    }
+    else if (type == 'page') {
+      streamDeck.on(`down:${key.number}`, () => {
+        displayPage(key.page);
+      });
+    }
+  });
 }
 
 /**
@@ -222,11 +274,19 @@ function createToggleLedButton(key) {
  * Create a button that navigates to another page.
  */
 function createPageButton(key) {
-  var imagePath = path.join(IMAGE_FOLDER, key.image);
-  key.currentImage = imagePath;
-
-  draw(key);
-  addKeyListener(key);
+  if (key.image) {
+    var imagePath = path.join(IMAGE_FOLDER, key.image);
+    key.currentImage = imagePath;
+    draw(key);
+    addKeyListener(key);
+  }
+  else if (key.text) {
+    streamDeck.drawText(key.text, key.number, { x: 6, fontFile: './fonts/consolas-24-white/consolas-24-white.fnt', bufferOnly: true }).then((buffer) => {
+      key.currentImageBuffer = buffer;
+      draw(key);
+      addKeyListener(key);
+    });
+  }
 }
 
 /**
@@ -234,7 +294,6 @@ function createPageButton(key) {
  */
 function createMomentaryButton(key) {
   var upImagePath = path.resolve(IMAGE_FOLDER + key.upImage);
-  var downImagePath = path.resolve(IMAGE_FOLDER + key.downImage);
   key.currentImage = upImagePath;
 
   draw(key);
@@ -247,6 +306,22 @@ function createMomentaryPageButton(buttonIdentifier, page, upImage, downImage, b
   streamDeck.on(`up:${buttonNumber}`, () => {
     displayPage(pages[page]);
   });
+}
+
+function createKeyboardButton(key) {
+  if (key.image) {
+    var imagePath = path.join(IMAGE_FOLDER, key.image);
+    key.currentImage = imagePath;
+    draw(key);
+    addKeyListener(key);
+  }
+  else if (key.text) {
+    streamDeck.drawText(key.text, key.number, { bufferOnly: true }).then((buffer) => {
+      key.currentImageBuffer = buffer;
+      draw(key);
+      addKeyListener(key);
+    });
+  }
 }
 
 function createPviSelectedWaypointIndicator(buttonNumber) {
@@ -296,5 +371,27 @@ function createPviSelectedWaypointIndicator(buttonNumber) {
 
   api.on('PVI_TARGETS_LED', (value) => {
     drawImageFile(value, 'btnNAV-on.png');
+  });
+}
+
+function pressKeyboard(keyboardKeys) {
+  keyboardKeys = Array.isArray(keyboardKeys) ? keyboardKeys : [keyboardKeys];
+
+  keyboardKeys.forEach((key) => {
+    if (key.includes('+')) {
+      var split = key.split('+');
+      var modifier = split[0];
+      var character = split[1];
+
+      console.log('pressing combo key', modifier, character);
+      robot.keyToggle(modifier, 'down');
+      robot.keyToggle(character, 'down');
+      robot.keyToggle(character, 'up');
+      robot.keyToggle(modifier, 'up');
+    }
+    else {
+      console.log('pressing single key', key);
+      robot.keyTap(key);
+    }
   });
 }
