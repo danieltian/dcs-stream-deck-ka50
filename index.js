@@ -155,7 +155,6 @@ function initializePages(pages) {
 }
 
 function initializeKey(key) {
-<<<<<<< HEAD
   key.type = Array.isArray(key.type) ? key.type : [key.type];
 
   key.type.forEach((type) => {
@@ -180,28 +179,6 @@ function initializeKey(key) {
         break;
     }
   });
-=======
-  switch (key.type) {
-    case 'ledButton':
-      createToggleLedButton(key);
-      break;
-    case 'button':
-      createMomentaryButton(key);
-      break;
-    case 'stateButton':
-      createMomentaryButton(key);
-      break;
-    case 'page':
-      createPageButton(key);
-      break;
-    case 'pageWithAction':
-      createMomentaryPageButton(key.button, key.page, key.upImage, key.downImage, key.number);
-      break;
-    case 'custom':
-      key.fn();
-      break;
-  }
->>>>>>> d036ad114ae2ae7933266adc908c9b8181d25b7c
 }
 
 var currentPage;
