@@ -211,46 +211,6 @@ function draw(key) {
 }
 
 function addKeyListener(key) {
-<<<<<<< HEAD
-  key.type.forEach((type) => {
-    if (type == 'ledButton') {
-      streamDeck.on(`down:${key.number}`, () => {
-        api.sendMessage(`${key.button} 1\n`);
-      });
-
-      streamDeck.on(`up:${key.number}`, () => {
-        api.sendMessage(`${key.button} 0\n`);
-      });
-    }
-    else if (type == 'button') {
-      var upImagePath = path.resolve(IMAGE_FOLDER + key.upImage);
-      var downImagePath = path.resolve(IMAGE_FOLDER + key.downImage);
-
-      streamDeck.on(`down:${key.number}`, () => {
-        api.sendMessage(`${key.button} 1\n`);
-        key.currentImage = downImagePath;
-        draw(key);
-      });
-
-      streamDeck.on(`up:${key.number}`, () => {
-        api.sendMessage(`${key.button} 0\n`);
-        key.currentImage = upImagePath;
-        draw(key);
-      });
-    }
-    else if (type == 'keyboard') {
-      streamDeck.on(`down:${key.number}`, () => {
-        pressKeyboard(key.keys);
-      });
-    }
-    else if (type == 'page') {
-      streamDeck.on(`down:${key.number}`, () => {
-        displayPage(key.page);
-      });
-    }
-  });
-}
-=======
   if (key.type == 'ledButton') {
     streamDeck.on(`down:${key.number}`, () => {
       api.sendMessage(`${key.button} 1\n`);
@@ -284,7 +244,6 @@ function addKeyListener(key) {
   else if (key.type == 'stateButton') {
     var upImagePath = path.resolve(IMAGE_FOLDER + key.upImage);
     var downImagePath = path.resolve(IMAGE_FOLDER + key.downImage);
->>>>>>> d036ad114ae2ae7933266adc908c9b8181d25b7c
 
     streamDeck.on(`down:${key.number}`, () => {
       if (key.state == 1) {
